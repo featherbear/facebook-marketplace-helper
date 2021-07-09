@@ -84,10 +84,10 @@
     if (hasURLchanged) {
       if ((itemID = parseID(lastURL))) {
         // Log a new view
-        console.debug('Classified:', itemID)
+        // console.debug('Classified:', itemID)
         setSeen(itemID)
       } else {
-        console.debug('Listing page')
+        // console.debug('Listing page')
       }
     } else if (!/\/marketplace\/item\//.test(lastURL)) {
       doSponsorYeet()
