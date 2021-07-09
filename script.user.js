@@ -1,10 +1,10 @@
 // ==UserScript==
 // @name         Facebook Marketplace Helper
 // @namespace    https://github.com/featherbear/facebook-marketplace-helper/
-// @version      0.1
+// @version      0.2
 // @description  Hide sponsored ads, mark viewed items
-// @author       You
-// @match        https://www.facebook.com/marketplace/*/search/?query=*
+// @author       featherbear
+// @match        https://www.facebook.com/marketplace*
 // @match        https://www.facebook.com/marketplace/item/*
 // @icon         https://www.google.com/s2/favicons?domain=facebook.com
 // @grant   GM_getValue
@@ -58,11 +58,14 @@
     }
   }
 
-  function doMark () {
+  function doMark (forceAll = false) {
     let seenItems = GM_getValue(seenArrayKey)
+
     for (let textElem of document.querySelectorAll(
-      `a[href^="/marketplace/item/"]:not([${seenAttributeKey}])`
+      `a[href^="/marketplace/item/"]:not([${seenAttributeKey}])` +
+        (forceAll ? '' : ':not([fbmh-processed])')
     )) {
+
       let [price, name, location] = textElem.innerText.split('\n')
       let id = parseID(textElem.href)
       if (!id) continue
@@ -71,6 +74,8 @@
         let elem = recurseParent(textElem, 5)
         elem.setAttribute(seenAttributeKey, '')
       }
+
+      textElem.setAttribute('fbmh-processed', '')
     }
   }
 
@@ -89,11 +94,16 @@
       } else {
         // console.debug('Listing page')
       }
+      doMark(true) // Complete
+
     } else if (!/\/marketplace\/item\//.test(lastURL)) {
       doSponsorYeet()
-      doMark()
+      doMark() // Incremental
     }
   }, pollTimeMS)
+
+  // Force update states every minute
+  // setInterval(() => doMark(true), 60 * 1000)
 
   {
     let sheet = window.document.styleSheets[0]
