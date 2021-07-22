@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Facebook Marketplace Helper
 // @namespace    https://github.com/featherbear/facebook-marketplace-helper/
-// @version      0.2
+// @version      0.3
 // @description  Hide sponsored ads, mark viewed items
 // @author       featherbear
 // @match        https://www.facebook.com/marketplace*
@@ -9,6 +9,7 @@
 // @icon         https://www.google.com/s2/favicons?domain=facebook.com
 // @grant   GM_getValue
 // @grant   GM_setValue
+// @grant   GM_addStyle
 // ==/UserScript==
 
 ;(function () {
@@ -105,27 +106,19 @@
   // Force update states every minute
   // setInterval(() => doMark(true), 60 * 1000)
 
-  {
-    let sheet = window.document.styleSheets[0]
-    sheet.insertRule(
-      `
+
+
+    GM_addStyle(`
 [${seenAttributeKey}] {
     opacity: 0.4;
-    filter: saturate(0.1);}
-`,
-      sheet.cssRules.length
-    )
+    filter: saturate(0.1);
+}`)
 
-    sheet.insertRule(
-      `
+ GM_addStyle(`
 [${seenAttributeKey}]:hover {
     opacity: 1;
     filter: saturate(1);
-}
-`,
-      sheet.cssRules.length
-    )
-  }
+}`) 
 
   if (!Array.isArray(GM_getValue(seenArrayKey))) GM_setValue(seenArrayKey, [])
   console.info('Facebook Marketplace Helper loaded!')
